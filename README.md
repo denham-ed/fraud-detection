@@ -21,3 +21,30 @@ Scams and other fraudulent activity are a growing problem in New Zealand and may
 | used_pin_number (float)                | The purchaser used their Personal Identification Number during this transaction | Encoded as a float (1.0 for True, 0.0 for False)                                                                                                                                             | tbc   |
 | online_order (float)                   | The transaction occurred online                                                 | Encoded as a float (1.0 for True, 0.0 for False)                                                                                                                                             | tbc   |
 | fraud(float)                           | The transaction is fraudulent                                                   | Encoded as a float (1.0 for True, 0.0 for False)                                                                                                                                             | tbc   |
+
+## Business Requirements
+
+Auckland Capital Bank want to know more about the key markers for potentially fraudulent activity in order to minimise their financial loss due to fraudulent activity. They also would like to safeguard their customers from this loss and would like to ensure they are giving customers the optimal advice about fraud prevention.
+
+1. ACB would like to understand the patterns in the transaction data to better understand the most relevant variables correlated to a fraudulent transaction.
+2. ACB would like to be able to 'flag' potentially fraudulent transactions at Point of Sale for further investigation
+
+## Project Hypotheses & Validation
+
+The Senior Management team of ACB have put forward two hypotheses for testing during this study:
+
+- The further away from home that a transaction occurs, the more likely it is to be fraudulent.
+  - A correlation study will be undertaken to assess this.
+- Online transactions are more likely to be fraudulent than in-person transactions.
+  - A correlation study will be undertaken to asses this.
+
+## Project Rationale
+
+## Make this more user story focussed.
+
+- **Business Requirement 1:** Data Visualisation and Correlation study
+  - This study will interrogate the transaction data, described above.
+  - It will conduct a correlation study (Pearson and Spearman) to understand better how the variables are correlated to Fraud.
+  - It will plot the main variables against Fraud to visualise insights.
+- **Business Requirement 2:** Classification Pipeline
+  - ACB want to predict if a transaction is fraudulent. This will require a binary classifier.
