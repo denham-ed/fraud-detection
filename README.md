@@ -48,3 +48,29 @@ The Senior Management team of ACB have put forward two hypotheses for testing du
   - It will plot the main variables against Fraud to visualise insights.
 - **Business Requirement 2:** Classification Pipeline
   - ACB want to predict if a transaction is fraudulent. This will require a binary classifier.
+
+  ## ML Business Case
+
+### Scope and Objective
+
+A ML model will be used to predict if a transaction is fraudulent. It will use the historical transaction data, as described above. The target variable ('fraud') is categorical and contains 2-classes. It is a supervised, 2-class, single-label classification model output: 0 (not fraudulent), 1 (fraudulent).
+
+The objective of the project is to allow ACB to safeguard customers and minimise financial loss due to fraud.
+
+### Measuring Success
+
+ACB have set clear metrics of such success, which are:
+
+- **95% Recall for Fraud.** This will protect the vast majority of customers at risk of fraud.
+- **90% Precision for Fraud.** ACB does not want to unnecessarily contact or take preventative action (such as freezing cards) for customers who are making genuine transactions. This has been shown to reduce customer satisfaction and trust in the bank.
+
+### Outputs
+
+The model output is defined as a flag, indicating if a transaction and _the associated probability of fraud!?!!??!!!?!?._
+*For this proof of concept, individual transactions will be entered into the dashboard. In future these will be able to be done in bulk*
+
+### Heuristics
+
+Currently ACB does not employ any approach to predicting fraudulent transactions.
+
+### Describe training data...
