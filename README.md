@@ -61,7 +61,7 @@ The objective of the project is to allow ACB to safeguard customers and minimise
 
 ACB have set clear metrics of such success, which are:
 
-- **95% Recall for Fraud.** This will protect the vast majority of customers at risk of fraud.
+- **90% Recall for Fraud.** This will protect the vast majority of customers at risk of fraud.
 - **90% Precision for Fraud.** ACB does not want to unnecessarily contact or take preventative action (such as freezing cards) for customers who are making genuine transactions. This has been shown to reduce customer satisfaction and trust in the bank.
 
 ### Outputs
