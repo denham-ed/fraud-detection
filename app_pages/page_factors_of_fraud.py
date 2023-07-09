@@ -1,5 +1,6 @@
 import streamlit as st
 
+
 def page_factors_of_fraud_body():
     st.header("Factors of Fraud")
 
