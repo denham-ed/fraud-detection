@@ -31,3 +31,4 @@ def page_summary_body():
         "Data Analytics milestone project as part of Code Institute's Diploma in Full Stack Software "
         "Development."
     )
+    
