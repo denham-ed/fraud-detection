@@ -2,6 +2,9 @@ import streamlit as st
 from src.data_management import load_transaction_data
 import matplotlib.pyplot as plt
 import seaborn as sns
+from feature_engine.discretisation import EqualFrequencyDiscretiser
+import plotly.graph_objects as go
+
 sns.set_style('whitegrid')
 
 def page_factors_of_fraud_body():
@@ -45,6 +48,11 @@ def page_factors_of_fraud_body():
 
     if st.checkbox("View Fraud Levels per Variable"):
         churn_level_per_variable(df_eda)
+
+    if st.checkbox("Show Parallel Plot (opens in new tab)"):
+        df_parallel = prepare_parallel_plot(df_eda)
+        show_parallel_plot(df_parallel)
+        # st.image("outputs/plots/parallel.png")
 
     st.subheader("Conclusions")
 
@@ -106,3 +114,63 @@ def churn_level_per_variable(df_eda):
             variable_percentile = df_eda[col].quantile(0.95)
             plot_numerical(df_eda, col, target_var, xlim=[0, variable_percentile])
 
+def prepare_parallel_plot(df_eda):
+    n_classes = 10
+    disc = EqualFrequencyDiscretiser(q=n_classes, variables=['distance_from_home','ratio_to_median_purchase_price'])
+    df_parallel = disc.fit_transform(df_eda)
+    classes_ranges = disc.binner_dict_['distance_from_home'][1:-1]
+
+    distance_map = {}
+    for n in range(0, n_classes):
+        if n == 0:
+            distance_map[n] = f"<{round(classes_ranges[0],2)}"
+        elif n == n_classes-1:
+            distance_map[n] = f"+{round(classes_ranges[-1],2)}"
+        else:
+            distance_map[n] = f"{round(classes_ranges[n-1],2)} to {round(classes_ranges[n],2)}"
+
+    classes_ranges = disc.binner_dict_['ratio_to_median_purchase_price'][1:-1]
+
+    ratio_labels_map = {}
+    for n in range(0, n_classes):
+        if n == 0:
+            ratio_labels_map[n] = f"<{round(classes_ranges[0],2)}"
+        elif n == n_classes-1:
+            ratio_labels_map[n] = f"+{round(classes_ranges[-1],2)}"
+        else:
+            ratio_labels_map[n] = f"{round(classes_ranges[n-1],2)} to {round(classes_ranges[n],2)}"
+
+    df_parallel['distance_from_home'] = df_parallel['distance_from_home'].replace(distance_map)
+    df_parallel['ratio_to_median_purchase_price'] = df_parallel['ratio_to_median_purchase_price'].replace(ratio_labels_map)
+    df_parallel['fraud'] = df_parallel['fraud'].replace({'Fraud': 1, 'No Fraud': 0})
+    return df_parallel
+
+def show_parallel_plot(df_parallel):
+
+    ratio_dim = go.parcats.Dimension(
+        values=df_parallel.ratio_to_median_purchase_price,
+        categoryorder='category ascending', label="Ratio to Median Purchase Price"
+    )
+
+    online_dim = go.parcats.Dimension(
+        values=df_parallel.online_order, label="Online Order")
+    pin_dim = go.parcats.Dimension(
+        values=df_parallel.used_pin_number, label="Used PIN Number")
+
+    distance_dim = go.parcats.Dimension(
+        values=df_parallel.distance_from_home, label="Distance from Home", categoryorder='category ascending')
+
+    fraud_dim = go.parcats.Dimension(
+        values=df_parallel.fraud, label="Fraud", categoryarray=[0, 1], ticktext=['No Fraud', 'Fraud'])
+
+    colorscale = [[0, 'lightsteelblue'], [1, 'red']]
+
+    fig = go.Figure(data=[go.Parcats(dimensions=[ratio_dim, distance_dim, online_dim, pin_dim,  fraud_dim],
+                                    line={
+        'color': df_parallel['fraud'], 'colorscale': colorscale},
+        hoveron='color', hoverinfo='count',
+        labelfont={'size': 18, 'family': 'Arial'},
+        tickfont={'size': 16, 'family': 'Arial'},
+        arrangement='freeform')])
+
+    fig.show()
