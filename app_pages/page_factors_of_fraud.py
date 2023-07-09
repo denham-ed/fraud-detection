@@ -1,6 +1,7 @@
 import streamlit as st
 from src.data_management import load_transaction_data
 import matplotlib.pyplot as plt
+import plotly.express as px
 import seaborn as sns
 from feature_engine.discretisation import EqualFrequencyDiscretiser
 import plotly.graph_objects as go
@@ -45,14 +46,31 @@ def page_factors_of_fraud_body():
     df_eda['online_order'] = df_eda['online_order'].replace({1: 'Online', 0: 'Not Online'})
     df_eda['used_pin_number'] = df_eda['used_pin_number'].replace({1: 'Pin Used', 0: 'No Pin'})
     df_eda['fraud'] = df_eda['fraud'].replace({1.0: 'Fraud', 0: 'No Fraud'})
+    df_parallel = prepare_parallel_plot(df_eda)
+    df_stats = df_parallel.copy()
+    
+
 
     if st.checkbox("View Fraud Levels per Variable"):
         churn_level_per_variable(df_eda)
 
-    if st.checkbox("Show Parallel Plot (opens in new tab)"):
-        df_parallel = prepare_parallel_plot(df_eda)
+
+
+
+    
+    if st.checkbox("View Parallel Plot (opens in new tab)"):
+        st.info(
+            "This parallel plot inidicates a connection the highest categories for both Ratio "
+            "to Median Purchase Price and Distance from Home, and fraudulent transactions."
+            )
+   
         show_parallel_plot(df_parallel)
-        # st.image("outputs/plots/parallel.png")
+
+    if st.checkbox("View Discretised Histograms"):
+        vars_to_test = ['distance_from_home','ratio_to_median_purchase_price']
+        for col in vars_to_test:
+            show_discretised_histograms(df_stats, col)
+  
 
     st.subheader("Conclusions")
 
@@ -78,7 +96,8 @@ def page_factors_of_fraud_body():
         "Data Analytics milestone project as part of Code Institute's Diploma in Full Stack Software "
         "Development."
     )
-
+    
+    # Utility Functions 
 def plot_categorical(df, col, target_var):
     plt.figure(figsize=(12, 5))
     sns.countplot(data=df, x=col, hue=target_var,
@@ -173,4 +192,23 @@ def show_parallel_plot(df_parallel):
         tickfont={'size': 16, 'family': 'Arial'},
         arrangement='freeform')])
 
-    fig.show()
+    st.plotly_chart(fig)
+
+
+def show_discretised_histograms(df_stats, col):
+    df_stats['fraud'] = df_stats['fraud'].replace({1:'Fraud',0:'No Fraud'})
+    fraudulent = df_stats[df_stats['fraud'] == 'Fraud'][col]
+    bin_edges = fraudulent.unique().tolist()
+    bins = sorted(bin_edges, key=lambda x: float(x.split()[0]) if x[0] != '<' else float('-inf'))
+    fig = px.histogram(df_stats, x=col, color="fraud", category_orders={col: bins},
+                       color_discrete_map={"No Fraud": "green", "Fraud": "red"})
+
+    fig.update_layout(
+        title="Histogram of " + f"{col.replace('_',' ').title()}",
+        xaxis=dict(title=f"{col.replace('_',' ').title()}"),
+        yaxis=dict(title="Counts"),
+        legend_title="Fraud"
+    )
+
+    st.plotly_chart(fig)
+
